@@ -1,0 +1,4 @@
+.next
+node_modules
+locales
+next-env.d.ts
