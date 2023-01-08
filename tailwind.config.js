@@ -7,8 +7,9 @@ module.exports = {
         primary: "#009688",
         accent: "#94C720",
         warn: "#C70D38",
-        text: "#404040",
-        "table-header": "#8d8d8d"
+        "default-text": "#404040",
+        "table-header": "#8d8d8d",
+        card: "#f2f2f2"
       },
       fontFamily: {
         sans: ["Roboto", "sans-serif"]
