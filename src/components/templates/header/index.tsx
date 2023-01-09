@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
-import { classJoin } from "../../../utils";
+import { classJoin } from "@/utils";
 
 const Header = () => {
   const [active, setActive] = useState(false);

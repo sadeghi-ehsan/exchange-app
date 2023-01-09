@@ -1,6 +1,6 @@
+import { classJoin } from "@/utils";
 import { forwardRef } from "react";
 import { IFormElWrapperProps } from "./types";
-import { classJoin } from "../../../utils";
 
 export const FormElementWrapper = forwardRef<HTMLDivElement, IFormElWrapperProps>(
   ({ label, children, className, labelClassName, ...restProps }, ref) => {
