@@ -7,4 +7,10 @@ export interface ISelectOptionProps extends StandardProps {
 
   /** rates object */
   options: {};
+
+  /** value returned on select*/
+  onChange: (value: any, name: string) => void;
+
+  /** name of select option */
+  name: string;
 }

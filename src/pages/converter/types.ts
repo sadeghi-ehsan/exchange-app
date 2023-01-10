@@ -13,9 +13,40 @@
  * ```
  */
 export interface IExchange {
-  motd: object;
+  motd: Motd;
   success: boolean;
   base: string;
   date: string;
   rates: object;
+}
+
+export interface Motd {
+  msg: string;
+  url: string;
+}
+
+export interface Query {
+  from: string;
+  to: string;
+  amount: number;
+}
+
+export interface Info {
+  rate?: any;
+}
+
+export interface IRates {
+  motd: Motd;
+  success: boolean;
+  query: Query;
+  info: Info;
+  historical: boolean;
+  date: string;
+  result?: any;
+}
+
+export enum Duration {
+  "7 Days" = "7 Days",
+  "15 Days" = "15 Days",
+  "30 Days" = "30 Days"
 }
