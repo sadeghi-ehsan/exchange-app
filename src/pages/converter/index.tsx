@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { convertRates, getExchanges } from "@/store/slices/exchangesSlice";
 import { FormElementWrapper } from "../../components/Atoms/FormElementWrapper";
-import { useAppDispatch, useAppSelector } from "@/hooks/redux";
+import { useAppSelector } from "@/hooks/redux";
 import { SelectOption } from "@/components/Atoms/SelectOption";
 import { commaSeparator } from "@/utils";
 import { Divider } from "@/components/Atoms/Divider";
@@ -12,8 +12,7 @@ import { Charts } from "./Charts/Charts";
 
 const Converter: React.FC = () => {
   const exchangeRedux = useAppSelector(state => state);
-  const dispatch = useAppDispatch();
-  const [state, setState] = useState({ from: "", to: "", amount: "" });
+  const [state, setState] = useState({ from: "", to: "", amount: "1" });
   const [statsView, setStatsView] = useState("table");
 
   useEffect(() => {
@@ -36,7 +35,7 @@ const Converter: React.FC = () => {
   }, [exchangeRedux]);
 
   const convertRateExchange = () => {
-    dispatch(convertRates(state));
+    convertRates(state);
   };
   const swapExchange = () => {
     let newObj = { ...state };
@@ -55,6 +54,7 @@ const Converter: React.FC = () => {
       <div className="flex space-x-8 items-end justify-between ">
         <FormElementWrapper label="amount" className="w-1/5">
           <input
+            defaultValue={state.amount}
             name="amount"
             className="mt-5 py-2 outline-none  border-b-2 bg-card border-b-table-header w-full "
             onInput={(event: React.ChangeEvent<HTMLInputElement>) =>

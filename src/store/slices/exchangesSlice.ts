@@ -45,6 +45,15 @@ export const convertRates = async ({ from, to, amount }: Query) => {
   try {
     const { data } = await ExchangeMicroService.get(ExchangeEndPoints.GET_CONVERT_EXCHANGE({ from, to, amount }));
     store.dispatch(setConvertRate(data));
+
+    let history: IRates[] = [];
+    if (localStorage.getItem("history")) {
+      let prevHistory = JSON.parse(localStorage.getItem("history") || "{}");
+      history = [...prevHistory, data];
+      localStorage.setItem("history", JSON.stringify(history));
+    } else {
+      localStorage.setItem("history", JSON.stringify([data]));
+    }
   } catch (e) {
     console.log("error", e);
   }
