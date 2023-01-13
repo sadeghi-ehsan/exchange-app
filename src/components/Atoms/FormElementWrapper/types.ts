@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { StandardProps } from "../../../types/common";
+import { StandardProps } from "@/types/common";
 
 export interface IFormElWrapperProps extends StandardProps {
   /** Title of the element to show in legend area */

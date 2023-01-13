@@ -1,5 +1,5 @@
 import { classJoin } from "@/utils";
-import React, { forwardRef, useEffect, useState } from "react";
+import React, { forwardRef } from "react";
 import { ISelectOptionProps } from "./types";
 
 export const SelectOption = forwardRef<HTMLDivElement, ISelectOptionProps>(
