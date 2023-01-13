@@ -1,6 +1,6 @@
-import "../styles/globals.css";
+import "@/styles/globals.css";
 import type { AppProps } from "next/app";
-import Layout from "../components/templates/layout";
+import Layout from "@/components/Templates/layout";
 import { store } from "@/store";
 import { Provider as ReduxProvider } from "react-redux";
 

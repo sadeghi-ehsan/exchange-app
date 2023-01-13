@@ -13,6 +13,10 @@ module.exports = {
       },
       fontFamily: {
         sans: ["Roboto", "sans-serif"]
+      },
+      spacing: {
+        125: "31.25rem", // 500px,
+        150: "50rem" // 800px,
       }
     }
   },

@@ -1,55 +1,79 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { convertRates, getExchanges } from "@/store/slices/exchangesSlice";
+import { convertRates, getExchangeRateHistory, getExchanges } from "@/store/slices/exchangesSlice";
 import { FormElementWrapper } from "../../components/Atoms/FormElementWrapper";
 import { useAppSelector } from "@/hooks/redux";
 import { SelectOption } from "@/components/Atoms/SelectOption";
-import { commaSeparator } from "@/utils";
+import { commaSeparator, today, xDaysAgo } from "@/utils";
 import { Divider } from "@/components/Atoms/Divider";
-import { Duration } from "./types";
+import { Duration, IRates } from "./types";
 import { Tables } from "./Tables/Tables";
 import { Charts } from "./Charts/Charts";
 
 const Converter: React.FC = () => {
-  const exchangeRedux = useAppSelector(state => state);
-  const [state, setState] = useState({ from: "", to: "", amount: "1" });
+  const exchangeRedux = useAppSelector(state => state.exchangeSlice);
+  const [state, setState] = useState({ from: "", to: "", amount: 1, duration: 7 });
   const [statsView, setStatsView] = useState("table");
+  const [resultRateState, setResultRateState] = useState<IRates>({
+    date: "",
+    historical: false,
+    info: { rate: "" },
+    motd: { msg: "", url: "" },
+    query: { from: "", to: "", amount: 1 },
+    result: undefined,
+    success: false
+  });
 
   useEffect(() => {
     getExchanges();
   }, []);
 
-  const handleChange = (value: string, name: string) => {
-    const val = value.indexOf(",") > -1 ? value.split(",")[1] : value;
-    setState(prevState => ({ ...prevState, [name]: val }));
-  };
-
   useEffect(() => {
-    const { latestRate } = exchangeRedux.exchangeSlice;
+    const { latestRate } = exchangeRedux;
     if (latestRate) {
-      let copy = { ...state }; // creating copy of state variable jasper
-      copy.from = Object.keys(latestRate?.rates)[0];
-      copy.to = Object.keys(latestRate?.rates)[0];
-      setState(copy);
+      /** init state from and to */
+      if (!state.from && !state.to) {
+        const clonedState = { ...state }; // creating copy of state variable
+        clonedState.from = Object.keys(latestRate?.rates)[0];
+        clonedState.to = Object.keys(latestRate?.rates)[0];
+        setState(clonedState);
+      }
     }
   }, [exchangeRedux]);
 
   const convertRateExchange = () => {
     convertRates(state);
+    getExchangeRateHistory({ start_date: xDaysAgo(state.duration), end_date: today(), base: state.from });
   };
+  useEffect(() => {
+    const { resultRate } = exchangeRedux;
+    if (resultRate) {
+      setResultRateState(resultRate);
+    }
+  }, [exchangeRedux]);
+
+  useEffect(() => {
+    console.log("state", state);
+    if (state.duration) {
+      getExchangeRateHistory({ start_date: xDaysAgo(state.duration), end_date: today(), base: state.from });
+    }
+  }, [state]);
+
   const swapExchange = () => {
     let newObj = { ...state };
     newObj.from = state.to;
     newObj.to = state.from;
     setState(newObj);
   };
-  const switchStatsView = (e: string) => {
-    setStatsView(e === "table" ? "table" : "chart");
+
+  const handleChange = (value: string, name: string) => {
+    const val = value.indexOf(",") > -1 ? value.split(",")[1] : value;
+    setState(prevState => ({ ...prevState, [name]: val }));
   };
 
-  const { resultRate, latestRate } = exchangeRedux.exchangeSlice;
+  const { latestRate } = exchangeRedux;
   return (
-    <div className="px-24 py-9">
+    <div className="px-24 py-9 h-full">
       <h1 className="font-sans text-5xl font-bold text-default-text pb-11 pt-8">I want to convert</h1>
       <div className="flex space-x-8 items-end justify-between ">
         <FormElementWrapper label="amount" className="w-1/5">
@@ -89,17 +113,17 @@ const Converter: React.FC = () => {
         </a>
       </div>
 
-      {resultRate && (
+      {resultRateState.success && (
         <>
           <div className="flex flex-col justify-center items-center pt-20 select-none  text-default-text">
             <h1 className="font-sans text-5xl">
-              {`${resultRate.query.amount}  ${resultRate.query.from}`} ={" "}
-              <span className="text-accent font-bold">{`${commaSeparator(resultRate.result, 3, true)} ${
-                resultRate.query.to
+              {`${resultRateState.query?.amount}  ${resultRateState.query?.from}`} ={" "}
+              <span className="text-accent font-bold">{`${commaSeparator(resultRateState.result, 3, true)} ${
+                resultRateState.query?.to
               }`}</span>
             </h1>
-            <h2 className="pt-10">{`1 ${resultRate.query.from} = xx ${resultRate.query.to}`}</h2>
-            <h2 className="">{`1 ${resultRate.query.to} = xx ${resultRate.query.from}`}</h2>
+            <h2 className="pt-10">{`1 ${resultRateState.query?.from} = xx ${resultRateState.query?.to}`}</h2>
+            <h2 className="">{`1 ${resultRateState.query?.to} = xx ${resultRateState.query?.from}`}</h2>
             <Divider className="w-full my-12 " />
           </div>
           <div className="flex flex-col text-default-text">
@@ -121,7 +145,7 @@ const Converter: React.FC = () => {
                     name="group1"
                     className="accent-primary"
                     defaultChecked
-                    onChange={e => switchStatsView(e.target.value)}
+                    onChange={e => setStatsView(e.target.value === "table" ? "table" : "chart")}
                   />
                   <span>Table</span>
                 </label>
@@ -131,13 +155,13 @@ const Converter: React.FC = () => {
                     value="chart"
                     name="group1"
                     className="accent-primary"
-                    onChange={e => switchStatsView(e.target.value)}
+                    onChange={e => setStatsView(e.target.value === "table" ? "table" : "chart")}
                   />
                   <span>Chart</span>
                 </label>
               </fieldset>
             </div>
-            {statsView === "table" ? <Tables /> : <Charts />}
+            {statsView === "table" ? <Tables currentState={state} /> : <Charts />}
           </div>
         </>
       )}

@@ -45,8 +45,16 @@ export interface IRates {
   result?: any;
 }
 
-export enum Duration {
-  "7 Days" = "7 Days",
-  "15 Days" = "15 Days",
-  "30 Days" = "30 Days"
+export const Duration = {
+  "7": 7,
+  "15": 15,
+  "30": 3
+};
+
+export interface IRatesHistory extends Omit<IRates, "query" | "info" | "historical" | "date" | "result"> {
+  timeseries: boolean;
+  base: string;
+  start_date: string;
+  end_date: string;
+  rates: {};
 }

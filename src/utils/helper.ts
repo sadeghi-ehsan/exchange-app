@@ -48,3 +48,7 @@ export const isNumberOrNumberStr = (val: any) => isNumber(val) || isNumberString
 
 /** checks if param is number string */
 export const isNumberString = (val: any) => isString(val) && !isNaN(Number(val));
+
+export const xDaysAgo = (x: number) => new Date(Date.now() - x * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+
+export const today = () => new Date().toISOString().split("T")[0];
