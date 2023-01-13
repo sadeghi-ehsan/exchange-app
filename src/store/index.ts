@@ -1,12 +1,8 @@
 import { configureStore } from "@reduxjs/toolkit";
 import exchangeSlice from "./slices/exchangesSlice";
 
-const reducer = {
-  exchangeSlice
-};
-
 export const store = configureStore({
-  reducer: reducer
+  reducer: { exchangeSlice }
 });
 
 // Infer the `RootState` and `AppDispatch` types from the store itself

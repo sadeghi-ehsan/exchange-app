@@ -58,3 +58,10 @@ export interface IRatesHistory extends Omit<IRates, "query" | "info" | "historic
   end_date: string;
   rates: {};
 }
+
+export interface IInitState {
+  from: string;
+  to: string;
+  amount: number;
+  duration: number;
+}
