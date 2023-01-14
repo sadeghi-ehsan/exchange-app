@@ -6,7 +6,7 @@ import { IFilters } from "@/pages/converter/Filters/types";
 
 // @ts-ignore
 const Filters: React.FC = forwardRef<HTMLDivElement, IFilters>(
-  ({ handleChange, currentState, swapExchange, latestRate, convertRateExchange }) => {
+  ({ handleChange, currentState, swapExchange, latestRate, convertRateExchange, selectFrom, selectTo }) => {
     return (
       <div className="flex space-x-8 items-end justify-between ">
         <FormElementWrapper label="amount" className="w-1/5">
@@ -21,6 +21,7 @@ const Filters: React.FC = forwardRef<HTMLDivElement, IFilters>(
         </FormElementWrapper>
         <FormElementWrapper label="from" className="w-2/5">
           <SelectOption
+            ref={selectFrom}
             options={latestRate?.rates}
             onChange={handleChange}
             name="from"
@@ -32,6 +33,7 @@ const Filters: React.FC = forwardRef<HTMLDivElement, IFilters>(
         </div>
         <FormElementWrapper label="to" className="w-2/5">
           <SelectOption
+            ref={selectTo}
             options={latestRate?.rates}
             onChange={handleChange}
             name="to"
@@ -39,7 +41,7 @@ const Filters: React.FC = forwardRef<HTMLDivElement, IFilters>(
           />
         </FormElementWrapper>
         <a
-          className="bg-primary px-3 py-2 text-white rounded-sm shadow-md cursor-pointer"
+          className="bg-primary px-3 py-2 text-white rounded-sm shadow-md cursor-pointer select-none hover:bg-accent hover:shadow-2xl  duration-500"
           onClick={convertRateExchange}
         >
           CONVERT

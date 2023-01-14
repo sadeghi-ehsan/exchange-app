@@ -5,8 +5,9 @@ import { ISelectOptionProps } from "./types";
 export const SelectOption = forwardRef<HTMLDivElement, ISelectOptionProps>(
   ({ className, options, onChange, name, ...restProps }, ref) => {
     return (
-      <div {...restProps} ref={ref} className={classJoin(["text-default-text ", className])}>
+      <div {...restProps} className={classJoin(["text-default-text ", className])}>
         <select
+          ref={ref}
           name={name}
           onChange={e => onChange(e.target.value, name)}
           className="w-full bg-transparent focus-visible:outline-0  cursor-pointer"

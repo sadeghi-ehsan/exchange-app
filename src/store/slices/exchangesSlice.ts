@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import ExchangeMicroService from "@/apiServices/exchangeMicroservice";
 import ExchangeEndPoints from "@/constants/apiEndpoints/exchangeMicroservice";
 import { IExchange, IRates, IRatesHistory, Query } from "@/pages/converter/types";
@@ -8,11 +8,13 @@ interface IState {
   latestRate?: IExchange[];
   resultRate?: IRates[];
   exchangeRateHistory?: IRatesHistory[];
+  exchangeChartData?: [];
 }
 
 const initialState: IState = {
   latestRate: undefined,
-  resultRate: undefined
+  resultRate: undefined,
+  exchangeChartData: undefined
 };
 
 export const getExchanges = createAsyncThunk("getExchange", async () => {
@@ -53,7 +55,13 @@ export const getExchangeRateHistory = createAsyncThunk("historyRate", async ({ s
 export const slice = createSlice({
   name: "exchange",
   initialState,
-  reducers: {},
+  reducers: {
+    setTblDataStore: (state, action: PayloadAction<any>) => {
+      console.log("-------------data", state);
+      console.log("-------------action", action.payload);
+      state.exchangeChartData = action.payload;
+    }
+  },
   extraReducers: builder => {
     builder
       .addCase(getExchanges.fulfilled, (state, action) => {
@@ -68,5 +76,6 @@ export const slice = createSlice({
   }
 });
 
+export const { setTblDataStore } = slice.actions;
 // Action creators are generated for each case reducer function
 export default slice.reducer;

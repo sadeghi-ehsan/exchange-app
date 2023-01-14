@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Divider } from "@/components/Atoms/Divider";
-import { useAppSelector } from "@/hooks/redux";
+import { useAppDispatch, useAppSelector } from "@/hooks/redux";
 import { IRatesHistory } from "../types";
 import { commaSeparator } from "@/utils";
+import { useDispatch } from "react-redux";
+import { setTblDataStore } from "@/store/slices/exchangesSlice";
 
 // @ts-ignore
 const Tables: React.FC = ({ currentState }) => {
+  const dispatch = useAppDispatch();
   const exchangeRedux = useAppSelector(state => state.exchangeSlice);
   const [history, setHistory] = useState<IRatesHistory>({
     base: "",
@@ -34,6 +37,7 @@ const Tables: React.FC = ({ currentState }) => {
           tableData = [...tableData, temp];
         });
       setTblData(tableData);
+      dispatch(setTblDataStore(tblData));
     }
   }, [history]);
   return (

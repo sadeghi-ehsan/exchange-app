@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { convertRates, getExchangeRateHistory, getExchanges } from "@/store/slices/exchangesSlice";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
 import { today, xDaysAgo } from "@/utils";
@@ -14,6 +14,8 @@ const Converter: React.FC = () => {
   const [statsView, setStatsView] = useState("table");
   const exchangeRedux = useAppSelector(state => state.exchangeSlice);
   const [state, setState] = useState<IInitState>({ from: "", to: "", amount: 1, duration: 7 });
+  const selectFrom = useRef();
+  const selectTo = useRef();
 
   const [resultRateState, setResultRateState] = useState<IRates>({
     date: "",
@@ -54,11 +56,16 @@ const Converter: React.FC = () => {
   };
 
   const swapExchange = () => {
+    /** change select option value */
+    let temp = selectFrom.current?.value;
+    selectFrom.current.value = selectTo.current?.value;
+    selectTo.current.value = temp;
+
+    /** swap state value */
     let newObj = { ...state };
     newObj.from = state.to;
     newObj.to = state.from;
     setState(newObj);
-    convertRateExchange();
   };
 
   const prevState = usePrevious({ state });
@@ -85,6 +92,8 @@ const Converter: React.FC = () => {
         swapExchange={swapExchange}
         latestRate={latestRate}
         convertRateExchange={convertRateExchange}
+        selectFrom={selectFrom}
+        selectTo={selectTo}
       />
       <Result
         resultRate={resultRateState}
