@@ -30,6 +30,7 @@ export const convertRates = createAsyncThunk("convertExchange", async ({ from, t
   try {
     const { data } = await ExchangeMicroService.get(ExchangeEndPoints.GET_CONVERT_EXCHANGE({ from, to, amount }));
     let history: IRates[] = [];
+    data.time = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false });
     if (localStorage.getItem("history")) {
       let prevHistory = JSON.parse(localStorage.getItem("history") || "[]");
       history = [...prevHistory, data];

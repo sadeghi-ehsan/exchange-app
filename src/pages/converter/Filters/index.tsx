@@ -29,7 +29,7 @@ const Filters: React.FC = forwardRef<HTMLDivElement, IFilters>(
           />
         </FormElementWrapper>
         <div className="bg-white p-2 text-primary cursor-pointer shadow-md " onClick={swapExchange}>
-          <Image src="/icons/compare_arrows.svg" width={24} height={24} alt="compare" />
+          <Image src="/icons/compare_arrows.svg" width={30} height={30} alt="compare" />
         </div>
         <FormElementWrapper label="to" className="w-2/5">
           <SelectOption

@@ -31,8 +31,16 @@ const Result: React.FC = forwardRef<HTMLDivElement, IResult>(({ handleChange, on
               resultRateState.query?.to
             }`}</span>
           </h1>
-          <h2 className="pt-10">{`1 ${resultRateState.query?.from} = xx ${resultRateState.query?.to}`}</h2>
-          <h2 className="">{`1 ${resultRateState.query?.to} = xx ${resultRateState.query?.from}`}</h2>
+          <h2 className="pt-10">{`1 ${resultRateState.query?.from} = ${commaSeparator(
+            resultRateState.result / resultRate.query.amount,
+            5,
+            true
+          )} ${resultRateState.query?.to}`}</h2>
+          <h2 className="">{`1 ${resultRateState.query?.to} = ${commaSeparator(
+            resultRate.query.amount / resultRateState.result,
+            5,
+            true
+          )} ${resultRateState.query?.from}`}</h2>
           <Divider className="w-full my-12 " />
         </div>
         <div className="flex flex-col text-default-text">

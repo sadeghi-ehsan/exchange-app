@@ -8,12 +8,15 @@ import { usePrevious } from "@/hooks/usePrevious";
 import Filters from "@/pages/converter/Filters";
 import Result from "@/pages/converter/Result";
 import Tables from "@/pages/converter/Tables/Tables";
+import { useRouter } from "next/router";
 
 const Converter: React.FC = () => {
   const dispatch = useAppDispatch();
+  const router = useRouter();
   const [statsView, setStatsView] = useState("table");
   const exchangeRedux = useAppSelector(state => state.exchangeSlice);
   const [state, setState] = useState<IInitState>({ from: "", to: "", amount: 1, duration: 7 });
+  const [queryState, setQueryState] = useState<IInitState>({});
   const selectFrom = useRef();
   const selectTo = useRef();
 
@@ -31,6 +34,23 @@ const Converter: React.FC = () => {
     dispatch(getExchanges());
   }, []);
 
+  /** if query from history page trigger start */
+  useEffect(() => {
+    if (Object.keys(router.query).length !== 0) {
+      const queryState = { ...state, ...router.query };
+      setQueryState(queryState);
+    }
+  }, [router.query]);
+  useEffect(() => {
+    if (Object.keys(queryState).length !== 0) {
+      dispatch(convertRates(queryState));
+      dispatch(
+        getExchangeRateHistory({ start_date: xDaysAgo(queryState.duration), end_date: today(), base: queryState.from })
+      );
+    }
+  }, [queryState]);
+  /** if query from history page trigger end */
+
   useEffect(() => {
     const { latestRate } = exchangeRedux;
     if (latestRate) {
@@ -43,6 +63,7 @@ const Converter: React.FC = () => {
       }
     }
   }, [exchangeRedux]);
+
   useEffect(() => {
     const { resultRate } = exchangeRedux;
     if (resultRate) {
@@ -50,24 +71,7 @@ const Converter: React.FC = () => {
     }
   }, [exchangeRedux]);
 
-  const convertRateExchange = () => {
-    dispatch(convertRates(state));
-    dispatch(getExchangeRateHistory({ start_date: xDaysAgo(state.duration), end_date: today(), base: state.from }));
-  };
-
-  const swapExchange = () => {
-    /** change select option value */
-    let temp = selectFrom.current?.value;
-    selectFrom.current.value = selectTo.current?.value;
-    selectTo.current.value = temp;
-
-    /** swap state value */
-    let newObj = { ...state };
-    newObj.from = state.to;
-    newObj.to = state.from;
-    setState(newObj);
-  };
-
+  /** checks prevState of duration with current if changed .... start */
   const prevState = usePrevious({ state });
   useEffect(() => {
     if (prevState?.state.duration) {
@@ -76,11 +80,31 @@ const Converter: React.FC = () => {
       }
     }
   }, [state]);
+  /** checks prevState of duration with current if changed .... end */
 
   const handleChange = (value: string, name: string) => {
     const val = value.indexOf(",") > -1 ? value.split(",")[1] : value;
     setState(prevState => ({ ...prevState, [name]: val }));
   };
+
+  const convertRateExchange = () => {
+    dispatch(convertRates(state));
+    dispatch(getExchangeRateHistory({ start_date: xDaysAgo(state.duration), end_date: today(), base: state.from }));
+  };
+
+  /** swap state and select change value start */
+  const swapExchange = () => {
+    /** change select option value */
+    let temp = selectFrom.current?.value;
+    selectFrom.current.value = selectTo.current?.value;
+    selectTo.current.value = temp;
+    /** swap state value */
+    let newObj = { ...state };
+    newObj.from = state.to;
+    newObj.to = state.from;
+    setState(newObj);
+  };
+  /** swap state and select change value end */
 
   const { latestRate } = exchangeRedux;
   return (
