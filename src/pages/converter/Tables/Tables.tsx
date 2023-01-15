@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Divider } from "@/components/Atoms/Divider";
-import { useAppDispatch, useAppSelector } from "@/hooks/redux";
+import { useAppSelector } from "@/hooks/redux";
 import { IRatesHistory } from "../types";
 import { commaSeparator } from "@/utils";
-import { useDispatch } from "react-redux";
-import { setTblDataStore } from "@/store/slices/exchangesSlice";
 
 // @ts-ignore
 const Tables: React.FC = ({ currentState }) => {
-  const dispatch = useAppDispatch();
   const exchangeRedux = useAppSelector(state => state.exchangeSlice);
   const [history, setHistory] = useState<IRatesHistory>({
     base: "",
@@ -19,7 +16,7 @@ const Tables: React.FC = ({ currentState }) => {
     success: false,
     timeseries: false
   });
-  const [tblData, setTblData] = useState<[{ date: string; rate: number }]>([{ date: "", rate: 1 }]);
+  const [tblData, setTblData] = useState<[{ date: string; rate: number }]>([]);
 
   useEffect(() => {
     const { exchangeRateHistory } = exchangeRedux;
@@ -27,7 +24,7 @@ const Tables: React.FC = ({ currentState }) => {
   }, [exchangeRedux]);
 
   useEffect(() => {
-    if (history) {
+    if (history?.success) {
       const { rates } = history;
       const { to } = currentState;
       let tableData: any[] = [];
@@ -37,7 +34,6 @@ const Tables: React.FC = ({ currentState }) => {
           tableData = [...tableData, temp];
         });
       setTblData(tableData);
-      dispatch(setTblDataStore(tblData));
     }
   }, [history]);
   return (

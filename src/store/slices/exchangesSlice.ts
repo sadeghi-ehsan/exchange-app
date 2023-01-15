@@ -14,7 +14,7 @@ interface IState {
 const initialState: IState = {
   latestRate: undefined,
   resultRate: undefined,
-  exchangeChartData: undefined
+  exchangeRateHistory: undefined
 };
 
 export const getExchanges = createAsyncThunk("getExchange", async () => {
@@ -56,13 +56,7 @@ export const getExchangeRateHistory = createAsyncThunk("historyRate", async ({ s
 export const slice = createSlice({
   name: "exchange",
   initialState,
-  reducers: {
-    setTblDataStore: (state, action: PayloadAction<any>) => {
-      console.log("-------------data", state);
-      console.log("-------------action", action.payload);
-      state.exchangeChartData = action.payload;
-    }
-  },
+  reducers: {},
   extraReducers: builder => {
     builder
       .addCase(getExchanges.fulfilled, (state, action) => {
@@ -77,6 +71,5 @@ export const slice = createSlice({
   }
 });
 
-export const { setTblDataStore } = slice.actions;
 // Action creators are generated for each case reducer function
 export default slice.reducer;

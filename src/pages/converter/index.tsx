@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { convertRates, getExchangeRateHistory, getExchanges } from "@/store/slices/exchangesSlice";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
 import { today, xDaysAgo } from "@/utils";
-import { IInitState, IRates } from "./types";
+import { IExchange, IInitState, IRates } from "./types";
 import { Charts } from "@/pages/converter/Charts/Charts";
 import { usePrevious } from "@/hooks/usePrevious";
 import Filters from "@/pages/converter/Filters";
@@ -13,13 +13,12 @@ import { useRouter } from "next/router";
 const Converter: React.FC = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
-  const [statsView, setStatsView] = useState("table");
-  const exchangeRedux = useAppSelector(state => state.exchangeSlice);
-  const [state, setState] = useState<IInitState>({ from: "", to: "", amount: 1, duration: 7 });
-  const [queryState, setQueryState] = useState<IInitState>({});
-  const selectFrom = useRef();
   const selectTo = useRef();
-
+  const selectFrom = useRef();
+  const exchangeRedux = useAppSelector(state => state.exchangeSlice);
+  const [statsView, setStatsView] = useState("table");
+  const [state, setState] = useState<IInitState>({ from: "", to: "", amount: 1, duration: 7 });
+  const [queryState, setQueryState] = useState<IInitState>({ amount: 0, duration: 0, from: "", to: "" });
   const [resultRateState, setResultRateState] = useState<IRates>({
     date: "",
     historical: false,
@@ -36,13 +35,15 @@ const Converter: React.FC = () => {
 
   /** if query from history page trigger start */
   useEffect(() => {
-    if (Object.keys(router.query).length !== 0) {
-      const queryState = { ...state, ...router.query };
+    const { query } = router;
+    if (Object.keys(query).length !== 0) {
+      const queryState = { ...state, ...query };
       setQueryState(queryState);
+      setState(queryState);
     }
   }, [router.query]);
   useEffect(() => {
-    if (Object.keys(queryState).length !== 0) {
+    if (queryState.from !== "") {
       dispatch(convertRates(queryState));
       dispatch(
         getExchangeRateHistory({ start_date: xDaysAgo(queryState.duration), end_date: today(), base: queryState.from })
@@ -52,20 +53,7 @@ const Converter: React.FC = () => {
   /** if query from history page trigger end */
 
   useEffect(() => {
-    const { latestRate } = exchangeRedux;
-    if (latestRate) {
-      /** init state for from and to on component mount */
-      if (!state.from && !state.to) {
-        const clonedState = { ...state }; // creating copy of state variable
-        clonedState.from = Object.keys(latestRate?.rates)[0];
-        clonedState.to = Object.keys(latestRate?.rates)[0];
-        setState(clonedState);
-      }
-    }
-  }, [exchangeRedux]);
-
-  useEffect(() => {
-    const { resultRate } = exchangeRedux;
+    const { resultRate }: { resultRate: IRates } = exchangeRedux;
     if (resultRate) {
       setResultRateState(resultRate);
     }
@@ -88,15 +76,30 @@ const Converter: React.FC = () => {
   };
 
   const convertRateExchange = () => {
-    dispatch(convertRates(state));
-    dispatch(getExchangeRateHistory({ start_date: xDaysAgo(state.duration), end_date: today(), base: state.from }));
+    const clonedState = { ...state };
+    /** init state for FIRST TIME  */
+    if (clonedState.from === "" && clonedState.to === "") {
+      const { latestRate }: { latestRate: IExchange } = exchangeRedux;
+      if (latestRate) {
+        clonedState.from = Object.keys(latestRate?.rates)[0];
+        clonedState.to = Object.keys(latestRate?.rates)[0];
+      }
+    }
+    dispatch(convertRates(clonedState));
+    dispatch(
+      getExchangeRateHistory({ start_date: xDaysAgo(clonedState.duration), end_date: today(), base: clonedState.from })
+    );
+    setState(clonedState);
   };
 
   /** swap state and select change value start */
   const swapExchange = () => {
     /** change select option value */
+    // @ts-ignore
     let temp = selectFrom.current?.value;
+    // @ts-ignore
     selectFrom.current.value = selectTo.current?.value;
+    // @ts-ignore
     selectTo.current.value = temp;
     /** swap state value */
     let newObj = { ...state };
@@ -125,7 +128,7 @@ const Converter: React.FC = () => {
         handleChange={handleChange}
         onChangeView={(e: string) => setStatsView(e.target.value)}
       />
-      {statsView === "table" ? <Tables currentState={state} /> : <Charts />}
+      {statsView === "table" ? <Tables currentState={state} /> : <Charts currentState={state} />}
     </div>
   );
 };
