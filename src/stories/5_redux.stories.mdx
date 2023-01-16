@@ -1,0 +1,90 @@
+import { Meta } from "@storybook/addon-docs";
+
+<Meta title="DOCS/Redux" />
+
+# Redux
+
+Redux is set up in the project along with the redux toolkit.
+
+In general, all files related to redux are placed in the `src/store` folder.
+
+## useAppSelector
+
+For useSelector, it is better to use useAppSelector, which includes typescript states. This hook is located in `src/hooks/redux` folder.
+
+```ts
+import { useAppSelector } from "@/hooks/redux";
+```
+
+## useAppDispatch
+
+For useDispatch, it is better to use useAppDispatch, which includes typescript states. This hook is located in `src/hooks/redux` folder.
+
+```ts
+import { useAppDispatch } from "@/hooks/redux";
+```
+
+## How to add a new Slice:
+
+To add a new slice, proceed as follows:
+
+### 1. Create a new Slice for it
+
+First, in the `src/store/slices` folder, we create a new file with the desired name, for example, `fooSlice.ts`.
+
+```tsx
+/* eslint-disable no-param-reassign */
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+
+interface IState {
+  value: number;
+}
+
+const initialState: IState = {
+  value: 0
+};
+
+export const slice = createSlice({
+  name: "foo",
+  initialState,
+  reducers: {
+    increment: state => {
+      // Redux Toolkit allows us to write "mutating" logic in reducers. It
+      // doesn't actually mutate the state because it uses the Immer library,
+      // which detects changes to a "draft state" and produces a brand new
+      // immutable state based off those changes
+      state.value += 1;
+    },
+    decrement: state => {
+      state.value -= 1;
+    },
+    incrementByAmount: (state, action: PayloadAction<number>) => {
+      state.value += action.payload;
+    }
+  }
+});
+
+// Action creators are generated for each case reducer function
+export const { increment, decrement, incrementByAmount } = slice.actions;
+
+export default slice.reducer;
+```
+
+### 2. Adding it to the list of reducers
+
+Then we add it to the reducer in `src/store/index.ts`.
+
+```tsx
+export const store = configureStore({
+  reducer: { fooSlice }
+});
+```
+
+## The work is done! How to use:
+
+```ts
+import { useAppDispatch, useAppSelector } from "@/hooks/redux";
+
+const reduxAllStates = useAppSelector(state => state);
+const dispatch = useAppDispatch();
+```

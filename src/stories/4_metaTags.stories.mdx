@@ -1,0 +1,29 @@
+import { Meta } from "@storybook/addon-docs";
+
+<Meta title="DOCS/PagesMetaTags" />
+
+# PagesMetaTags
+
+For convenience and to avoid code repetition, we can pass meta tags in page props and it is handled in the app.tsx.
+
+The advantages of this work are as follows:
+
+- `Avoiding repetition and not needing to import <Head> on each page.`
+- `The possibility of putting prefixes and postfixes in front of the meta title in general.`
+
+## How to use
+
+It is enough to send these values in the pageMetaTags object in the props on the page:
+
+For example, in getStaticProps or getServerSideProps, we can do the following:
+
+```js
+export const getStaticProps = async ({ locale }) => ({
+  props: {
+    pageMetaTags: {
+      title: "register", // or i.e: "page1:tags.pageMetaTitle"
+      description: "registration in web site" // or "page2:pageDescription"
+    }
+  }
+});
+```

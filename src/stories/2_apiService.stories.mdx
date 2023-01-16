@@ -1,0 +1,58 @@
+import { Meta } from "@storybook/addon-docs";
+
+<Meta title="DOCS/ApiService" />
+
+# ApiService
+
+We use this service for API calls.
+
+This service is implemented based on microservice architecture. As a result, it has high scalability.
+
+apiServices inherit from axios.
+
+#### Why should we write an apiService for each microservice?
+
+Because each microservice is separate and may show different behavior and have responses with different structures, and also with this architecture we can create separate interceptors for each microservice.
+
+# Start working
+
+We write an apiService for each microservice. An example apiService under the title **authMicroservice** is placed in the `src/apiServices/authMicroservice/index.ts` folder for example.
+
+## Where to put Endpoint URLs?
+
+For ease of use, all constants have been placed in the `/src/constants' folder.
+As a result, we also use this folder in apiServices.
+
+An example of auth endpoint URLs for AuthApiService is placed in the `src/constants/apiEndpoints/authMicroservice.ts` folder for example.
+
+## Methods
+
+- get
+- post
+- put
+- delete
+- ... other axios methods
+
+## How to call an API
+
+javascript
+AuthMicroService.post("/api/auth/v1/foo/bar", body, axiosConfigs)
+.then(res => {})
+.catch(err => {})
+.finally(() => {});
+
+```
+
+### How to change the header or other axios config when calling an API with an exception?
+
+It is enough to send our configuration values in the third parameter in the posts or in the second parameter in the get.
+
+Example:
+
+javascript
+AuthMicroService.post("/api/auth/v1/foo/bar", body, {
+   headers: {
+     customheader1: "Bearer" + token
+   }
+});
+```
