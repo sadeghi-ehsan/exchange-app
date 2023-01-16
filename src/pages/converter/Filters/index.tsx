@@ -6,7 +6,7 @@ import { IFilters } from "@/pages/converter/Filters/types";
 
 // @ts-ignore
 const Filters: React.FC = forwardRef<HTMLDivElement, IFilters>(
-  ({ handleChange, currentState, swapExchange, latestRate, convertRateExchange, selectFrom, selectTo }) => {
+  ({ handleChange, currentState, swapExchange, latestRate, convertRateExchange, selectFrom, selectTo }, ref) => {
     return (
       <div className="flex space-x-8 items-end justify-between ">
         <FormElementWrapper label="amount" className="w-1/5">

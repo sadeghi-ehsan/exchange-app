@@ -3,11 +3,11 @@ import { AnyProps } from "@/types/common";
 import { ReactNode } from "react";
 
 export interface IFilters {
-  handleChange: () => void | AnyProps;
+  handleChange: (value: string, name: string) => any;
   currentState: IInitState;
   swapExchange: () => void;
   latestRate: IExchange;
   convertRateExchange: () => void;
-  selectFrom: ReactNode;
-  selectTo: ReactNode;
+  selectFrom: ReactNode | any;
+  selectTo: ReactNode | any;
 }

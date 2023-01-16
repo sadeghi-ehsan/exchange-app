@@ -6,7 +6,7 @@ export interface IFormElWrapperProps extends StandardProps {
   label?: string | ReactNode;
 
   /** Additional classes */
-  className?: string;
+  classNameInner?: string;
 
   /** custom className set directly for label */
   labelClassName?: string;
